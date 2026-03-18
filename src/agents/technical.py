@@ -279,7 +279,7 @@ class TechnicalAgent:
             support_level=round(support, 2),
             resistance_level=round(resistance, 2),
             key_levels={"lower_bb": round(lower_bb, 2), "upper_bb": round(upper_bb, 2), "sma_50": round(float(sma50), 2)},
-            indicators={"bbb": round(current_bbb, 4), "atr": round(float(last["ATR_14"]), 4), "rsi": round(float(last.get("RSI_14", 0)), 2)},
+            indicators={"bbb": round(current_bbb, 4), "atr_14": round(float(last["ATR_14"]), 4), "rsi": round(float(last.get("RSI_14", 0)), 2), "close": round(close, 2)},
             notes="Volatility squeeze with contracting ATR and volume dry-up",
         )
 
@@ -366,6 +366,7 @@ class TechnicalAgent:
 
             if score > best_score:
                 best_score = score
+                atr_val = float(df["ATR_14"].iloc[-1]) if "ATR_14" in df.columns and not pd.isna(df["ATR_14"].iloc[-1]) else 0.0
                 best_setup = TechnicalSetup(
                     ticker=ticker,
                     setup_type="bull_flag",
@@ -374,7 +375,7 @@ class TechnicalAgent:
                     support_level=round(consol_low, 2),
                     resistance_level=round(consol_high, 2),
                     key_levels={"ema_21": round(float(ema21_vals.iloc[-1]), 2), "impulse_high": round(imp_high, 2)},
-                    indicators={"impulse_pct": round(imp_pct, 2), "consol_range_pct": round(consol_range_pct, 2)},
+                    indicators={"impulse_pct": round(imp_pct, 2), "consol_range_pct": round(consol_range_pct, 2), "atr_14": round(atr_val, 4), "close": round(last_close, 2)},
                     notes=f"Bull flag: {imp_pct:.1f}% impulse, {consol_bars}-bar consolidation",
                 )
 
@@ -468,6 +469,7 @@ class TechnicalAgent:
         raw_score = divergence_score * 0.25 + proximity * 0.25 + vol_spike * 0.25 + macd_turn * 0.25
         technical_score = float(np.clip(raw_score * 9 + 1, 1, 10))
 
+        atr_val = float(last["ATR_14"]) if "ATR_14" in df.columns and not pd.isna(last.get("ATR_14")) else 0.0
         return TechnicalSetup(
             ticker=ticker,
             setup_type="mean_reversion",
@@ -475,8 +477,8 @@ class TechnicalAgent:
             technical_score=round(technical_score, 2),
             support_level=round(support_level, 2),
             resistance_level=round(resistance, 2),
-            key_levels={"sma_50": round(float(sma50), 2) if not pd.isna(sma50) else None},
-            indicators={"rsi": round(float(rsi_recent.iloc[-1]), 2), "volume_ratio": round(current_vol / vol_sma, 2)},
+            key_levels={"sma_50": round(float(sma50), 2) if not pd.isna(sma50) else None, "swing_high": round(resistance, 2)},
+            indicators={"rsi": round(float(rsi_recent.iloc[-1]), 2), "volume_ratio": round(current_vol / vol_sma, 2), "atr_14": round(atr_val, 4), "close": round(close, 2)},
             notes=f"Oversold bounce near support{' with RSI divergence' if has_divergence else ''}",
         )
 
@@ -570,6 +572,7 @@ class TechnicalAgent:
         raw_score = trend_strength * 0.4 + ema_touch * 0.3 + orderly * 0.3
         technical_score = float(np.clip(raw_score * 9 + 1, 1, 10))
 
+        atr_val = float(last["ATR_14"]) if "ATR_14" in df.columns and not pd.isna(last.get("ATR_14")) else 0.0
         return TechnicalSetup(
             ticker=ticker,
             setup_type="trend_pullback",
@@ -577,8 +580,8 @@ class TechnicalAgent:
             technical_score=round(technical_score, 2),
             support_level=round(support, 2),
             resistance_level=round(resistance, 2),
-            key_levels={"ema_21": round(ema21, 2), "sma_50": round(sma50, 2), "sma_200": round(sma200, 2)},
-            indicators={"adx": round(adx_val, 2), "rsi": round(rsi, 2)},
+            key_levels={"ema_21": round(ema21, 2), "sma_50": round(sma50, 2), "sma_200": round(sma200, 2), "swing_high": round(resistance, 2)},
+            indicators={"adx": round(adx_val, 2), "rsi": round(rsi, 2), "atr_14": round(atr_val, 4), "close": round(close, 2), "ema_21": round(ema21, 2), "sma_50": round(sma50, 2)},
             notes=f"Trend pullback to 21 EMA, ADX={adx_val:.0f}",
         )
 
