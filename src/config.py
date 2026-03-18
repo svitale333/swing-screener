@@ -13,8 +13,15 @@ class ScreenerConfig:
     min_avg_volume: int = 1_000_000
     min_price: float = 10.0
     max_price: float = 500.0
+    min_market_cap: float = 500_000_000.0
     min_options_volume: int = 500
     max_candidates: int = 300
+    cache_ttl_hours: float = 4.0
+    ticker_cache_ttl_hours: float = 24.0
+    max_workers: int = 10
+    blacklist: list[str] = field(default_factory=lambda: [
+        "BRK.A", "BRK.B", "GOOG",  # duplicates or data issues
+    ])
 
 
 @dataclass
