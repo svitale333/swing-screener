@@ -93,13 +93,18 @@ class TechnicalAgent:
     ) -> pd.DataFrame | None:
         """Extract a single ticker's OHLCV DataFrame from the batch download."""
         try:
-            if total_tickers == 1:
-                # Single-ticker download doesn't have MultiIndex columns
-                df = ohlcv.copy()
-            else:
-                if ticker not in ohlcv.columns.get_level_values(0):
+            if isinstance(ohlcv.columns, pd.MultiIndex):
+                # yf.download always returns MultiIndex (even for single ticker)
+                level_values = ohlcv.columns.get_level_values(0)
+                if ticker in level_values:
+                    df = ohlcv[ticker].copy()
+                elif "Close" in level_values:
+                    # Columns are (Price, Ticker) — droplevel to get flat OHLCV
+                    df = ohlcv.droplevel("Ticker", axis=1).copy()
+                else:
                     return None
-                df = ohlcv[ticker].copy()
+            else:
+                df = ohlcv.copy()
 
             df = df.dropna(subset=["Close"])
             if df.empty:
