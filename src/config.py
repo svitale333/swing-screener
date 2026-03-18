@@ -42,6 +42,8 @@ class SentimentConfig:
     max_tokens: int = 1024
     min_earnings_gap_days: int = 7
     max_tickers_per_batch: int = 5
+    api_call_delay_seconds: float = 1.0
+    max_retries: int = 3
 
 
 @dataclass

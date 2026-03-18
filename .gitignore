@@ -191,6 +191,7 @@ cython_debug/
 # Runtime caches
 data/screener_cache.json
 data/sp500_tickers.csv
+data/api_usage.json
 
 # Ruff stuff:
 .ruff_cache/
