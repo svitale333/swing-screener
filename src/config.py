@@ -47,6 +47,29 @@ class SentimentConfig:
 
 
 @dataclass
+class TradeParamsConfig:
+    # Entry buffer multipliers (fraction of ATR added above resistance/range)
+    breakout_entry_buffer: float = 0.1
+    flag_entry_buffer: float = 0.1
+    mean_reversion_entry_buffer: float = 0.2
+    pullback_ema_proximity_pct: float = 1.5
+
+    # Stop loss ATR multipliers
+    breakout_stop_atr: float = 0.5
+    flag_stop_atr: float = 0.5
+    mean_reversion_stop_atr: float = 0.75
+    pullback_stop_atr: float = 0.3
+
+    # Take profit multipliers
+    tp1_risk_multiple: float = 1.5
+    tp2_default_risk_multiple: float = 2.5
+
+    # Position risk limit
+    max_position_risk_pct: float = 10.0
+    wide_stop_warning_pct: float = 8.0
+
+
+@dataclass
 class ScoringConfig:
     min_risk_reward: float = 2.0
     technical_weight: float = 0.5
@@ -55,6 +78,8 @@ class ScoringConfig:
     min_confidence_score: float = 6.0
     target_play_count: int = 5
     max_play_count: int = 10
+    min_earnings_gap_days: int = 7
+    trade_params: TradeParamsConfig = field(default_factory=TradeParamsConfig)
 
 
 @dataclass
