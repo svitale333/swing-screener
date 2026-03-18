@@ -96,7 +96,12 @@ class ScreenerAgent:
 
         logger.info("Fetching S&P 500 tickers from Wikipedia")
         try:
-            tables = pd.read_html(SP500_URL)
+            from io import StringIO
+            from urllib.request import Request, urlopen
+
+            req = Request(SP500_URL, headers={"User-Agent": "Mozilla/5.0"})
+            html = urlopen(req).read().decode("utf-8")
+            tables = pd.read_html(StringIO(html))
             df = tables[0]
             # Wikipedia uses '.' in tickers but yfinance uses '-' (e.g. BRK.B -> BRK-B)
             df["Symbol"] = df["Symbol"].str.replace(".", "-", regex=False)
