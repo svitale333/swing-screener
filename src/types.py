@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
+from typing import Any
 
 
 @dataclass
@@ -93,4 +94,26 @@ class TradePlay:
             "catalysts": ", ".join(self.catalysts) if self.catalysts else "None",
             "risk_flags": ", ".join(self.risk_flags) if self.risk_flags else "None",
             "notes": self.notes,
+        }
+
+
+@dataclass
+class OrchestratorResult:
+    plays: list[TradePlay]
+    metadata: dict[str, Any]
+    iterations: int
+    run_id: str
+    timestamp: str
+    total_api_cost_estimate: float
+    execution_time_seconds: float
+
+    def to_dict(self) -> dict:
+        return {
+            "plays": [p.to_dict() for p in self.plays],
+            "metadata": self.metadata,
+            "iterations": self.iterations,
+            "run_id": self.run_id,
+            "timestamp": self.timestamp,
+            "total_api_cost_estimate": self.total_api_cost_estimate,
+            "execution_time_seconds": self.execution_time_seconds,
         }
