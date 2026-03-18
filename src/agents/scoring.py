@@ -100,12 +100,15 @@ class ScoringAgent:
         rr1 = calculate_rr_ratio(entry, stop, tp1)
         rr2 = calculate_rr_ratio(entry, stop, tp2) if tp2 is not None else None
 
+        # Primary R:R uses TP2 (the actual trade target); TP1 is just a partial exit
+        primary_rr = rr2 if rr2 is not None and rr2 > 0 else rr1
+
         position_risk_pct = (risk / entry) * 100.0
         sentiment_score = self._sentiment_to_score(sentiment)
 
         # --- Composite scoring ---
         # rr_score: R:R of 2.0 → 5, 3.0 → 7.5, 4.0+ → 10, <2.0 → linear 0-5
-        rr_score = self._rr_to_score(rr1)
+        rr_score = self._rr_to_score(primary_rr)
 
         # composite = weighted sum normalised to 0-10
         # technical_score is already 1-10, sentiment_score 1-10, rr_score 0-10
@@ -134,8 +137,8 @@ class ScoringAgent:
             stop_loss=round(stop, 2),
             take_profit_1=round(tp1, 2),
             take_profit_2=round(tp2, 2) if tp2 is not None else None,
-            risk_reward_ratio=round(rr1, 2),
-            risk_reward_ratio_tp2=round(rr2, 2) if rr2 is not None else None,
+            risk_reward_ratio=round(primary_rr, 2),
+            risk_reward_ratio_tp2=round(rr1, 2),  # TP1 R:R kept for reference
             position_risk_pct=round(position_risk_pct, 2),
             technical_score=round(setup.technical_score, 2),
             sentiment_score=round(sentiment_score, 2),
