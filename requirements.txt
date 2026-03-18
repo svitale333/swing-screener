@@ -1,0 +1,7 @@
+yfinance>=0.2.36
+pandas>=2.1.0
+pandas-ta>=0.3.14b1
+numpy>=1.24.0
+anthropic>=0.40.0
+python-dotenv>=1.0.0
+rich>=13.7.0
