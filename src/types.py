@@ -40,6 +40,7 @@ class SentimentResult:
     catalysts: list[str] = field(default_factory=list)
     risk_flags: list[str] = field(default_factory=list)
     earnings_date: str | None = None
+    days_to_earnings: int | None = None
     summary: str = ""
 
     def to_dict(self) -> dict:
