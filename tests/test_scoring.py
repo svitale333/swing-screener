@@ -250,11 +250,16 @@ class TestRRCalculation:
         plays, _ = agent.run([setup], [sentiment])
         assert len(plays) == 1
         play = plays[0]
-        # Verify R:R is correct: (tp1 - entry) / (entry - stop)
-        expected_rr = (play.take_profit_1 - play.entry_price) / (
+        # Primary R:R uses TP2 (the actual trade target); TP1 is the partial exit
+        expected_rr_tp2 = (play.take_profit_2 - play.entry_price) / (
             play.entry_price - play.stop_loss
         )
-        assert play.risk_reward_ratio == pytest.approx(expected_rr, abs=0.01)
+        assert play.risk_reward_ratio == pytest.approx(expected_rr_tp2, abs=0.01)
+        # TP1 R:R stored in risk_reward_ratio_tp2 for reference
+        expected_rr_tp1 = (play.take_profit_1 - play.entry_price) / (
+            play.entry_price - play.stop_loss
+        )
+        assert play.risk_reward_ratio_tp2 == pytest.approx(expected_rr_tp1, abs=0.01)
 
 
 # ---------------------------------------------------------------------------
