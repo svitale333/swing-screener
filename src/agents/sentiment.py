@@ -117,7 +117,7 @@ class SentimentAgent:
 
             except anthropic.RateLimitError as e:
                 last_error = e
-                wait = 2 ** attempt
+                wait = 30 * attempt  # 30s, 60s, 90s — matches per-minute rate limit window
                 logger.warning(
                     f"  {ticker}: rate limited (attempt {attempt}/{self.config.max_retries}), "
                     f"waiting {wait}s"
